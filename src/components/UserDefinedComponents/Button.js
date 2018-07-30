@@ -13,10 +13,11 @@ export default class Button extends Component {
     btnBackColor: PropTypes.string,
     buttonRadius: PropTypes.number,
     buttonTextStyle:PropTypes.object,
-    textStyle:PropTypes.textStyle,
+    textStyle:PropTypes.object,
     btnTextColor:PropTypes.string,
     btnTextLabel:PropTypes.string,
-    btnBorderColor:PropTypes.string
+    btnBorderColor:PropTypes.string,
+    btnBorderWidth:PropTypes.number
   }
 
   // initialize default props
@@ -25,6 +26,7 @@ export default class Button extends Component {
     onPress: () => {},
     btnBackColor:colors.colorGreen,
     buttonRadius:5,
+    btnBorderWidth:0,
     buttonTextStyle:{},
     textStyle:{},
     btnTextColor:colors.colorWhite,
@@ -41,6 +43,7 @@ export default class Button extends Component {
     const { 
       fullWidthButtonStyle,
       onPress,
+      btnBorderWidth,
       btnBackColor,
       buttonRadius,
       buttonTextStyle,
@@ -52,7 +55,7 @@ export default class Button extends Component {
     return (
         <View style={[styles.fullWidthButtonWrapper, fullWidthButtonStyle]}>
           <TouchableOpacity onPress={onPress} style={[styles.fullWidthButton,
-          { backgroundColor: btnBackColor, borderRadius: buttonRadius, borderColor:btnBorderColor}]}>
+          { borderWidth: btnBorderWidth, backgroundColor: btnBackColor, borderRadius: buttonRadius, borderColor:btnBorderColor}]}>
             <Text style={[styles.buttonTextStyle, textStyle, { color: btnTextColor}]}>
               {btnTextLabel}
             </Text>
@@ -65,10 +68,8 @@ export default class Button extends Component {
 const styles = StyleSheet.create({
   fullWidthButtonWrapper: {
     width: '100%',
-   // paddingLeft: 10,
     marginTop: 15,
     marginBottom: 15,
-    //paddingRight: 10
   },
   fullWidthButton: {
     width: '100%',

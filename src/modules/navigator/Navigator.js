@@ -10,16 +10,10 @@ import ProfileViewContainer from '../../modules/screens/Profile/ProfileViewConta
 const activeColor = colors.colorGreen;
 // TabNavigator is nested inside createStackNavigator
 export const TodoTabNavigator = createBottomTabNavigator({
-  TodoList: {
-    screen: TodoViewContainer,   
-  },
-  AddTask: {
-    screen: AddTaskViewContainer,    
-  },
-  Profile: {
-    screen: ProfileViewContainer,     
-  },
-},{
+  TodoList: {screen: TodoViewContainer},
+  AddTask: {screen: AddTaskViewContainer},
+  Profile: {screen: ProfileViewContainer},
+},{  
   tabBarOptions: {
     activeTintColor: colors.colorGreen,
     inactiveTintColor: colors.colorGray,
@@ -33,25 +27,22 @@ export const TodoTabNavigator = createBottomTabNavigator({
       paddingRight:40
     },    
     animationEnabled: false,
-    swipeEnabled: false,
+    swipeEnabled: false,    
   }
 });
 
 const AuthNavigator = createStackNavigator({
-  TodoList: {screen: TodoTabNavigator, navigationOptions: { header: null }}
-},
-  { initialRouteName: 'TodoList',headerMode:'none' },
-);
+  Todo: {screen:TodoTabNavigator,navigationOptions:{header:null}},   
+});
 
 const NonAuthNavigator = createStackNavigator({
-  Login: { screen: LoginViewContainer, navigationOptions: { header: null } },
-  //Todo: { screen: TodoTabNavigator, navigationOptions: { header: null } },
+  Login: { screen: LoginViewContainer, navigationOptions: {header: null}},
 });
 
 // Root navigator is a createStackNavigator
 const AppNavigator = createStackNavigator({
   NonAuthNavigator: { screen: NonAuthNavigator, navigationOptions: { header: null }},
-  AuthNavigator: { screen: AuthNavigator, navigationOptions: {}},
+  AuthNavigator: { screen: AuthNavigator, navigationOptions: { header: null}},
 }, { initialRouteName: 'NonAuthNavigator' });
 
 export default AppNavigator;

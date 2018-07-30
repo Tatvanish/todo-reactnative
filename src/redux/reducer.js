@@ -7,12 +7,10 @@ import AuthReducer from '../services/AuthService';
 import TodoReducer from '../services/TodoService';
 // ## Generator Reducer Imports
 
-const reducers = {
-  // Counter sample app state. This can be removed in a live application
-  //counter: CounterStateReducer,
-  // Navigator states
+const reducers = {  
   //navigatorState: NavigatorStateReducer,
-  session: SessionStateReducer
+  session: SessionStateReducer,
+  authReducer:AuthReducer
 };
 
 // initial state, accessor and mutator for supporting root-level

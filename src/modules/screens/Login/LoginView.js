@@ -1,17 +1,40 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, Image, SafeAreaView } from 'react-native';
+import { StackActions, NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
 // import common styles and static 
 import style from '../../../themes/css/styles';
 import { StaticText, colors} from '../../../themes/static/common';
 //custom component
 import CustomButton from '../../../components/UserDefinedComponents/Button';
-import { StackActions, NavigationActions } from 'react-navigation';
+//services
+import * as Auth from '../../../services/AuthService';
+
 class LoginView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "",
+      name: "hiral",
+      nameError:""
+    }
+  }
+  
+  login = () => {
+    if (this.state.name === "" || this.state.name === null) {
+      this.state.nameError = "Please enter name";
+      this.setState({ nameError: "Please enter name" });
+    } else {
+      this.state.nameError = "";
+      this.setState({ nameError: "" });
+    }
+
+    if(this.state.nameError === "" || this.state.nameError === null){   
+      let loginData = {
+        name:this.state.name
+      }
+      this.props.dispatch(Auth.postLogin(this.props, loginData, '123456'));      
+    }else{
+      console.log('test');
     }
   }
 
@@ -25,28 +48,27 @@ class LoginView extends Component {
           <Text style={style.blackText}>Todo</Text>
         </View>
         <View style={[style.formStyle, { height: '40%', justifyContent: 'flex-end'}]}>
-          <View style={{
+          <View>
+          <View style={{           
             borderRadius: 3,
             borderWidth:1,
             borderColor: colors.colorLine}}>
-          <TextInput
-            placeholder={StaticText.NamePlaceHolder}
-            onChangeText={(name) => this.setState({ name: name })}
-            value={this.state.name}
-            returnKeyType={'done'}
-            style={style.textField}
-            underlineColorAndroid={'transparent'}
-            />  
+            <TextInput
+              placeholder={StaticText.NamePlaceHolder}
+              onChangeText={(name) => {
+                this.setState({ name: name });                
+              }}
+              maxLength={20}
+              value={this.state.name}
+              returnKeyType={'done'}
+              style={style.textField}
+              underlineColorAndroid={'transparent'}
+              />
             </View>
+            {this.state.nameError.length > 0 ? <Text style={style.errorMessageStyle}>{this.state.nameError}</Text> : <View />}  
+          </View>
           <View style={{width:'100%'}}>        
-            <CustomButton btnTextLabel={StaticText.LoginButtonTitle} onPress={() => {
-              const resetAction = StackActions.reset({
-                index: 0,
-                key: null,
-                actions: [NavigationActions.navigate({ routeName: 'AuthNavigator' })],
-              });
-              this.props.navigation.dispatch(resetAction);
-             }} />
+            <CustomButton btnTextLabel={StaticText.LoginButtonTitle} onPress={this.login} />
           </View>
         </View>        
       </SafeAreaView>

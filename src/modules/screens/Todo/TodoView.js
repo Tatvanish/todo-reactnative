@@ -10,9 +10,7 @@ import CustomButton from '../../../components/UserDefinedComponents/Button';
 
 class TodoView extends Component { 
   static navigationOptions = ({ navigation }) => ({
-    header:null,
     title: '',
-    headerTitle: '',       
     tabBarIcon: ({ focused, tintColor }) => {
       const { routeName } = navigation.state;
       if (routeName === 'TodoList' && tintColor === colors.colorGray) {

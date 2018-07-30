@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, Image } from 'react-native';
+import { StackActions, NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
 // import common styles, functions and static 
 import style from '../../../themes/css/styles';
@@ -7,14 +8,11 @@ import { StaticText, colors } from '../../../themes/static/common';
 //custom component
 import Header from '../../../components/UserDefinedComponents/HeaderComponent';
 import CustomButton from '../../../components/UserDefinedComponents/Button';
-
-import { StackActions, NavigationActions } from 'react-navigation';
+import _ from 'lodash';
 
 class ProfileView extends Component {
   static navigationOptions = ({ navigation }) => ({
-    header: null,
     title: '',
-    headerTitle: '',
     tabBarIcon: ({ focused, tintColor }) => {
       const { routeName } = navigation.state;    
       if (routeName === 'Profile' && tintColor === colors.colorGray) {
@@ -25,20 +23,29 @@ class ProfileView extends Component {
         return <Image source={imageSrc} style={{width: 24, height: 24 }} />
       }
     }
-  });
+  });  
   constructor(props) {
     super(props);
     this.state = {      
       name: '',
     }
   }
+  
+  componentDidMount(){
+    if(this.props.user && !_.isEmpty(this.props.user)){
+      console.log('user---', this.props.user);
+      let user = this.props.user;
+      this.setState({name: user.name});
+    }
+  }
 
   render() {
     return (
       <View style={[style.wrapperContainer]}>
-        <Header headerTextLabel={'Hello'}/>
+        <Header headerTextLabel={this.props.name !== "" ? 'Hello, ' + this.state.name : 'My Profile'}/>
         <View style={{width:'100%',flex:1,justifyContent:'flex-end',paddingLeft:10, paddingRight:10}}>        
             <CustomButton 
+            btnBorderWidth={0.5}
             btnBackColor={colors.colorWhite}
             btnTextColor={colors.colorRed}
             btnTextLabel={StaticText.LogoutText} 

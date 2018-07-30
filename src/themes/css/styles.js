@@ -168,4 +168,6 @@ export default StyleSheet.create({
     marginTop: 10,
   },
   formStyle: { width: '100%', paddingLeft:10, paddingRight:10},
+  errorStyle: { borderColor: 'red', borderWidth: 1 },
+  errorMessageStyle: { width: '100%', color: 'red', marginBottom: 5 },
 });

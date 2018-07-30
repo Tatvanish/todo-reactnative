@@ -6,6 +6,7 @@ import ProfileView from './ProfileView';
 export default connect(
   state => ({
     // user defined states & props
+    user: state.getIn(['authReducer', 'user'])
   }),
   dispatch => {
     return {
