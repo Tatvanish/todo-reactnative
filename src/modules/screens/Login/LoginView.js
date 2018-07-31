@@ -7,6 +7,7 @@ import style from '../../../themes/css/styles';
 import { StaticText, colors} from '../../../themes/static/common';
 //custom component
 import CustomButton from '../../../components/UserDefinedComponents/Button';
+import Spinner from '../../../components/UserDefinedComponents/Spinner';
 //services
 import * as Auth from '../../../services/AuthService';
 
@@ -14,7 +15,7 @@ class LoginView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "hiral",
+      name: "tatva",
       nameError:""
     }
   }
@@ -32,7 +33,7 @@ class LoginView extends Component {
       let loginData = {
         name:this.state.name
       }
-      this.props.dispatch(Auth.postLogin(this.props, loginData, '123456'));      
+      this.props.dispatch(Auth.postLogin(this.props, loginData, '123456'));     
     }else{
       console.log('test');
     }
@@ -67,7 +68,8 @@ class LoginView extends Component {
             </View>
             {this.state.nameError.length > 0 ? <Text style={style.errorMessageStyle}>{this.state.nameError}</Text> : <View />}  
           </View>
-          <View style={{width:'100%'}}>        
+          <View style={{width:'100%'}}>
+               
             <CustomButton btnTextLabel={StaticText.LoginButtonTitle} onPress={this.login} />
           </View>
         </View>        

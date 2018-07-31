@@ -10,7 +10,8 @@ import TodoReducer from '../services/TodoService';
 const reducers = {  
   //navigatorState: NavigatorStateReducer,
   session: SessionStateReducer,
-  authReducer:AuthReducer
+  authReducer:AuthReducer,
+  todoReducer: TodoReducer,
 };
 
 // initial state, accessor and mutator for supporting root-level
