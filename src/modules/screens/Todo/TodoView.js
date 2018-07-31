@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, Image } from 'react-native';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 // import common styles, functions and static 
 import style from '../../../themes/css/styles';
 import { StaticText, colors } from '../../../themes/static/common';
 //custom component
 import Header from '../../../components/UserDefinedComponents/HeaderComponent';
 import CustomButton from '../../../components/UserDefinedComponents/Button';
+//services
+import * as Todo from '../../../services/TodoService';
 
 class TodoView extends Component { 
   static navigationOptions = ({ navigation }) => ({
@@ -27,7 +30,21 @@ class TodoView extends Component {
     this.state = {
       todoList: '',
       selectedTodo:''
+    }    
+  }
+
+  componentDidMount() {
+    if (this.props.user && !_.isEmpty(this.props.user)) {
+      let user = this.props.user;
+      console.log('logged in user--->', user);
+      this.state.userId = user.userId;
+      this.setState({userId:user.userId});
     }
+    if (this.props.todoList && !_.isEmpty(this.props.todoList)) {
+      let todoList = this.props.todoList;
+      console.log('logged in user todoList--->', todoList);
+    }
+    this.props.dispatch(Todo.getTodoList(this.props, this.state.userId));
   }
 
   render() {

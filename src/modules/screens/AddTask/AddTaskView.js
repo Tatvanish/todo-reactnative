@@ -32,13 +32,13 @@ class AddTaskView extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      userId:'',
       taskTitle:'',
       dueDate:'',
       selectedColor:'',
       taskTitleError:'',
       dueDateError: '',
-      colorError:'',
-      userId:''
+      colorError:''
     }
     this.props.dispatch(Todo.getColorList(this.props));
   }
@@ -46,6 +46,7 @@ class AddTaskView extends Component {
   componentDidMount(){    
     if(this.props.user && !_.isEmpty(this.props.user)){
       let user = this.props.user;
+      console.log('logged in user--->',user);
       this.setState({userId:user.userId});
     }
   }
@@ -61,37 +62,51 @@ class AddTaskView extends Component {
   }
 
   addTask = () => {
-    //requiredValidation(this.state.taskTitle,"Please enter task title", 'taskTitleError');
     if (_.isEmpty(this.state.taskTitle) || this.state.taskTitle === "") {
-      let errorMessage = "Please select due date";
+      let errorMessage = "Please enter task title";
       this.state.taskTitleError = errorMessage;
       this.setState({ taskTitleError: errorMessage });
     } else {
-      this.state.taskTitleError = "";
-      this.setState({ taskTitleError: "" });
+      this.state.taskTitleError="";
+      this.setState({taskTitleError: ""});
     }
     if (_.isEmpty(this.state.dueDate) || this.state.dueDate === "") {
       let dateMessage = "Please select due date";
-      this.state.dueDateError = dateMessage;
+      this.state.dueDateError =dateMessage;
       this.setState({ dueDateError: dateMessage });
     } else {
-      this.state.dueDateError = "";
-      this.setState({ dueDateError: "" });
+      this.state.dueDateError ="";
+      this.setState({dueDateError:""});
     }
-    if (_.isEmpty(this.state.selectedColor) || this.state.selectedColor === "") {
-      let errorMessage = "Please select due date";
-      this.state.colorError = errorMessage;
-      this.setState({ colorError: errorMessage });
+    if (this.state.selectedColor === "" || this.state.selectedColor === null) {
+      let colorMessage = "Please select color";
+      this.state.colorError = colorMessage;
+      this.setState({ colorError: colorMessage });
     } else {
-      this.state.colorError = "";
+      this.state.colorError= "" ;
       this.setState({ colorError: "" });
     }
 
-    if(_.isEmpty(this.state.taskTitleError) && _.isEmpty(this.state.dueDateError) && _.isEmpty(this.state.colorError)){
+    if(_.isEmpty(this.state.taskTitleError) && _.isEmpty(this.state.dueDateError) 
+    && (this.state.colorError === '' || this.state.colorError === null)){
       let addTaskData = {
-        
+        userId : this.state.userId,
+        taskTitle : this.state.taskTitle,
+        dueDate: this.state.dueDate,
+        colorId: this.state.selectedColor
       }
+      console.log('addTaskData', addTaskData);
+      this.props.dispatch(Todo.postTodoTask(this.props, addTaskData, '123456'));  
+      setTimeout(() => {
+        this.setState({
+          userId: '',
+          taskTitle: '',
+          dueDate: '',
+          selectedColor: ''
+        });
+      }, 1000);
     }else{
+      console.log('this.state',this.state);
       console.log('test');
     }
   }
@@ -111,9 +126,7 @@ class AddTaskView extends Component {
               }}>
               <TextInput
                 placeholder={StaticText.TaskTitlePlaceHolder}
-                onChangeText={(taskTitle) => {
-                  this.setState({ taskTitle: taskTitle });
-                }}
+                onChangeText= {(taskTitle) => this.setState({ taskTitle: taskTitle })}
                 numberOfLines={4}
                 multiline={true}
                 maxLength={150}
@@ -147,10 +160,10 @@ class AddTaskView extends Component {
                 showIcon={false}
                 customStyles={{
                   dateInput: { alignItems: 'flex-start', paddingLeft:10, borderWidth: 0 } }}
-                onDateChange={(dueDate) => { this.setState({ dueDate: dueDate }) }}
+                onDateChange={(dueDate) => this.setState({ dueDate: dueDate })}
               />
             </View>
-            {this.state.taskTitleError.length > 0 ? <Text style={style.errorMessageStyle}>{this.state.taskTitleError}</Text> : <View />}
+            {this.state.dueDateError.length > 0 ? <Text style={style.errorMessageStyle}>{this.state.dueDateError}</Text> : <View />}
           </View>
           <View style={styles.profileSection}>
             <View style={styles.colorStyle}>
@@ -172,6 +185,7 @@ class AddTaskView extends Component {
                 )
               })}
             </View>
+            {this.state.colorError.length > 0 ? <Text style={style.errorMessageStyle}>{this.state.colorError}</Text> : <View />}
           </View>
           <View style={{ width: '100%' }}>
             <CustomButton btnTextLabel={StaticText.AddText} onPress={this.addTask} />
