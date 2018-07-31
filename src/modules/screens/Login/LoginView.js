@@ -40,8 +40,11 @@ class LoginView extends Component {
   }
 
   render() {
+    if(this.props.loading){
+      return (<Spinner visible={this.props.loading} />);
+    }else{
     return (
-      <SafeAreaView style={[style.wrapperContainer]}>      
+      <SafeAreaView style={[style.wrapperContainer]}>            
         <View style={{height:'60%',width:'100%',alignItems:'center',justifyContent:'flex-end'}}>
           <View style={[style.imageThumbnail]}>
               <Image style={style.imageThumb} source={require('../../../../images/logo.png')} />            
@@ -49,7 +52,7 @@ class LoginView extends Component {
           <Text style={style.blackText}>Todo</Text>
         </View>
         <View style={[style.formStyle, { height: '40%', justifyContent: 'flex-end'}]}>
-          <View>
+          <View style={{ height:'25%'}}>
           <View style={{           
             borderRadius: 3,
             borderWidth:1,
@@ -67,14 +70,14 @@ class LoginView extends Component {
               />
             </View>
             {this.state.nameError.length > 0 ? <Text style={style.errorMessageStyle}>{this.state.nameError}</Text> : <View />}  
-          </View>
-          <View style={{width:'100%'}}>
-               
-            <CustomButton btnTextLabel={StaticText.LoginButtonTitle} onPress={this.login} />
+          </View>          
+          <View style={{width:'100%'}}>           
+            <CustomButton btnTextLabel={StaticText.LoginButtonTitle} onPress={this.login} />          
           </View>
         </View>        
       </SafeAreaView>
     );
+    }
   }
 }
 

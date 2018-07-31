@@ -15,50 +15,63 @@ import Toast from 'react-native-simple-toast';
 /*Async storage keys declaration*/
 const USER_KEY = 'TodoState:User';
 export async function setUserAsyncKey(user) {          
-  let userArray = userList = [];
-  try{
-  userArray = await AsyncStorage.getItem(USER_KEY);
-  userList = JSON.parse(userArray);
-  console.log('userList', userList);
-  if (userList && !_.isEmpty(userList)) {
-    console.log(444);
-    userList = _.orderBy(userList, 'userId', 'desc');
-    userList = last(userList, 1);
-    user.userId = parseInt(userList[0].userId) + 1;
-    userList = userList.push(user);
-    var json = await AsyncStorage.setItem(USER_KEY, JSON.stringify(userList));
-    return json;
-  } else {
-    console.log(555);
-    let users = [];
-    user.userId = 1;
-    users.push(user);    
-    let userData = JSON.stringify(users);    
-    console.log('userData---->', userData);
-    var json = await AsyncStorage.setItem(USER_KEY, userData);
-    return json;
-  }    
-  }
-  catch(error){
-    console.log('set user key error:',error.message);
-  }
+    await AsyncStorage.getItem(USER_KEY)
+    .then((users) => {
+      console.log('get userList', users);
+      let userList = JSON.parse(users);
+      if (userList && !_.isEmpty(userList)) {
+        console.log(444);
+        let userArray = _.orderBy(userList, 'userId', 'desc');
+        console.log('userArray', userArray);
+        let body = user;
+        body.userId = parseInt(userArray[0].userId)+1;
+        userList.push(body);
+        let userData = JSON.stringify(userList);
+        console.log('userData---->', userData);
+        let json = AsyncStorage.setItem(USER_KEY, userData);
+        return json;
+      } else {
+        console.log(555);
+        let users = [];
+        let body = user;
+        body.userId=1;
+        console.log('body',body);
+        users.push(body);
+        let userData = JSON.stringify(users);
+        console.log('userData---->', userData);
+        let json = AsyncStorage.setItem(USER_KEY, userData);
+        return json;
+      } 
+    })
+    .catch((error)=>{
+      console.log('set user key error:', error.message);
+    });     
 }
 
-export async function getUserAsyncKey(userName) {      
-    let response = [];
+/* export async function getUserAsyncKey(userName) {      
+  let user = {};
     await AsyncStorage.getItem(USER_KEY).then((users) => {
-      console.log('users--->', users);
       let userData = JSON.parse(users);
-      if (userData && !_.isEmpty(userData) && userData !== null) {        
-        console.log('users1--->', userData);
+      if (userData && !_.isEmpty(userData) && userData !== null) {  
+        console.log(1);   
         var index = userData.map(e => e.name).indexOf(userName);
-        response = userData[index];
+        console.log(index);
+        if(index > -1){
+          console.log(2);   
+          let user = userData[index];
+          return user;
+        }else{
+          console.log(3);   
+          return user;
+        }
+      }else{
+        console.log(4);   
+        return user;
       }
-      return response;
-    }).catch((error)=>{
+    }).catch((error) => {
       console.log(error);
-    });   
-}
+    }); 
+} */
 
 export async function clearUserAsyncKey() {
   return AsyncStorage.removeItem(USER_KEY);
@@ -108,27 +121,32 @@ export const postLogin = (props, loginData, _deviceToken) => {
       name: loginData.name,
       DeviceToken: _deviceToken,
       DeviceType: Platform.OS === 'ios' ? 1 : 2,
-    };
-    //clearUserAsyncKey();    
-    getUserAsyncKey(body.name)
-    .then((user) => {     
-      console.log('get user list--->', user);
-      if (user && !_.isEmpty(user)) {
-        if (user.name === loginData.name) {
-          console.log('already exist');
-          console.log('login successfully');
+    };    
+    AsyncStorage.getItem(USER_KEY).then((users) => {
+      let userData = JSON.parse(users);
+      if (userData && !_.isEmpty(userData) && userData !== null) {
+        console.log('all user list--->', userData);
+        let name = loginData.name;
+        let index = userData.map(e => e.name).indexOf(name);
+        if (parseInt(index)>=0) {
+          let user = userData[index];
+          console.log('already exist');    
           dispatch(loginSuccess(user));
           dispatch(resetTo(props, 'AuthNavigator'));
-        } else { 
+        } else {
           console.log('new user created');
-          setUserAsyncKey(body);
-          //dispatch(postLogin(props, loginData, _deviceToken));
+          setUserAsyncKey(body);        
+          setTimeout(() => {            
+            dispatch(postLogin(props, loginData, _deviceToken));
+          }, 100);
           dispatch(loginFail(''));
         }
       } else {
-        console.log('new user created');
+        console.log('first user created');
         setUserAsyncKey(body);
-        //dispatch(postLogin(props, loginData, _deviceToken));
+        setTimeout(() => {
+          dispatch(postLogin(props, loginData, _deviceToken));
+        }, 100);
         dispatch(loginFail(''));
       }
       dispatch(setLoader(false));
@@ -137,7 +155,7 @@ export const postLogin = (props, loginData, _deviceToken) => {
       Toast.show('We are unable to login, please try again');
       dispatch(setLoader(false));
       dispatch(loginFail(''));
-    });
+    });       
   };
 };
 
@@ -172,9 +190,3 @@ export default function AuthReducer(state = initialState, action) {
       return state;
   }
 }
-
-const last = function last(array, n) {  
-  if (array == null) return void 0;
-  if (n == null) return array[array.length - 1];
-  return array.slice(Math.max(array.length - n, 0));
-};
