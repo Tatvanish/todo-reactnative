@@ -165,7 +165,7 @@ export const postLogout = (props) => {
     dispatch(logoutSuccess(''));
     setTimeout(() => {      
       dispatch(resetTo(props, 'NonAuthNavigator'));
-    }, 10);    
+    }, 5);    
   }
 }
 

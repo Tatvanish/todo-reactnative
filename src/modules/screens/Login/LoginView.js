@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, Image, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, Image, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
 import _ from 'lodash';
@@ -18,7 +18,8 @@ class LoginView extends Component {
     super(props);
     this.state = {
       name: "",
-      nameError:""
+      nameError:"",
+      behavior: Platform.OS === 'ios' ? 'padding' : null
     }
   }
 
@@ -54,31 +55,32 @@ class LoginView extends Component {
       return (<Spinner visible={this.props.loading} />);
     }else{
     return (
+      <KeyboardAvoidingView style={style.wrapperContainer} behavior={this.state.behavior} keyboardVerticalOffset={60}>
       <SafeAreaView style={[style.wrapperContainer]}>            
-        <View style={{height:'60%',width:'100%',alignItems:'center',justifyContent:'flex-end'}}>
+        <View style={{height:'55%',width:'100%',alignItems:'center',justifyContent:'flex-end'}}>
           <View style={[style.imageThumbnail]}>
               <Image style={style.imageThumb} source={require('../../../../images/logo.png')} />            
           </View>        
           <Text style={style.blackText}>Todo</Text>
         </View>
-        <View style={[style.formStyle, { height: '40%', justifyContent: 'flex-end'}]}>
+        <View style={[style.formStyle, { height: '45%', justifyContent: 'flex-end'}]}>
           <View style={{ height:'25%'}}>
-          <View style={{           
-            borderRadius: 3,
-            borderWidth:1,
-            borderColor: colors.colorLine}}>
-            <TextInput
-              placeholder={StaticText.NamePlaceHolder}
-              onChangeText={(name) => {
-                this.setState({ name: name });                
-              }}
-              maxLength={20}
-              value={this.state.name}
-              returnKeyType={'done'}
-              style={style.textField}
-              underlineColorAndroid={'transparent'}
-              />
-            </View>
+            <View style={{           
+              borderRadius: 3,
+              borderWidth:1,
+              borderColor: colors.colorLine}}>
+              <TextInput
+                placeholder={StaticText.NamePlaceHolder}
+                onChangeText={(name) => {
+                  this.setState({ name: name });                
+                }}
+                maxLength={20}
+                value={this.state.name}
+                returnKeyType={'done'}
+                style={style.textField}
+                underlineColorAndroid={'transparent'}
+                />
+              </View>
             {this.state.nameError.length > 0 ? <Text style={style.errorMessageStyle}>{this.state.nameError}</Text> : <View />}  
           </View>          
           <View style={{width:'100%'}}>           
@@ -86,6 +88,7 @@ class LoginView extends Component {
           </View>
         </View>        
       </SafeAreaView>
+      </KeyboardAvoidingView>
     );
     }
   }
