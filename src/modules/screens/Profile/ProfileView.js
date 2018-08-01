@@ -9,6 +9,7 @@ import { StaticText, colors } from '../../../themes/static/common';
 import Header from '../../../components/UserDefinedComponents/HeaderComponent';
 import CustomButton from '../../../components/UserDefinedComponents/Button';
 import _ from 'lodash';
+import * as Auth from '../../../services/AuthService';
 
 class ProfileView extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -50,14 +51,7 @@ class ProfileView extends Component {
             btnTextColor={colors.colorRed}
             btnTextLabel={StaticText.LogoutText} 
             btnBorderColor={colors.colorRed}            
-            onPress={() => {
-              const resetAction = StackActions.reset({
-                index: 0,
-                key: null,
-                actions: [NavigationActions.navigate({ routeName: 'NonAuthNavigator' })],
-              });
-              this.props.navigation.dispatch(resetAction);
-             }} />
+            onPress={() => this.props.dispatch(Auth.postLogout(this.props))}/>
           </View>
       </SafeAreaView>
     );

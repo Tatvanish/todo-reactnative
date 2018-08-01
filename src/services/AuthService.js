@@ -159,6 +159,16 @@ export const postLogin = (props, loginData, _deviceToken) => {
   };
 };
 
+export const postLogout = (props) => {
+  return async (dispatch) => {
+    console.log('logout');
+    dispatch(logoutSuccess(''));
+    setTimeout(() => {      
+      dispatch(resetTo(props, 'NonAuthNavigator'));
+    }, 10);    
+  }
+}
+
 /* Initial state */
 const initialState = Map({
   user: {},
@@ -178,7 +188,7 @@ export default function AuthReducer(state = initialState, action) {
       return state;
 
     case SESSION_LOGOUT_SUCCESS:
-      return state;
+      return initialState;
  
     case SET_LOADER:
       return state.set('loading', action.payload);
