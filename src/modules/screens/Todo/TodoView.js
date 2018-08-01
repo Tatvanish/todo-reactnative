@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, Image } from 'react-native';
+import { View, Text, TextInput, Image, ListView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import _ from 'lodash';
+import moment from 'moment';
+import Swipeout from 'react-native-swipeout';
 // import common styles, functions and static 
 import style from '../../../themes/css/styles';
 import { StaticText, colors } from '../../../themes/static/common';
@@ -28,33 +30,149 @@ class TodoView extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      userId :'',
       todoList: '',
-      selectedTodo:''
-    }    
+      selectedTodo:'',
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (r1, r2) => r1 !== r2
+      })
+    }        
   }
 
-  componentDidMount() {
+  componentDidMount() {   
     if (this.props.user && !_.isEmpty(this.props.user)) {
       let user = this.props.user;
       console.log('logged in user--->', user);
       this.state.userId = user.userId;
       this.setState({userId:user.userId});
+      this.props.dispatch(Todo.getTodoList(this.props, this.state.userId));
+    }   
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.todo !== this.props.todo && nextProps.todo !== '' &&
+      nextProps.todo !== null && nextProps.todo !== undefined && nextProps.todo.length > 0) {
+      let todoList = _.orderBy(nextProps.todo, 'taskId', 'desc');
+      this.setState({ dataSource: this.state.dataSource.cloneWithRows(todoList)});     
     }
-    if (this.props.todoList && !_.isEmpty(this.props.todoList)) {
-      let todoList = this.props.todoList;
-      console.log('logged in user todoList--->', todoList);
+  }
+
+  renderRow = (item) => {
+    if (item !== '' && item !== null && item !== undefined) {
+      let swipeRightBtn = [{
+        text: 'Delete',
+        backgroundColor: 'red',
+        underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
+        onPress: () => {
+          Alert.alert(
+            'Delete',
+            'Are you sure want to delete task?',
+            [
+              { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+              { text: 'OK', onPress: () => this.props.dispatch(Todo.postTodoDelete(this.props, item.taskId, item.userId)) },
+            ],
+            { cancelable: false }
+          )
+        },
+        autoClose: true
+      }];
+  
+      let swipeLeftBtn = [{
+        text: 'Complete',
+        backgroundColor: colors.colorLightGray,
+        underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
+        onPress: () => {
+          Alert.alert(
+            'Complete',
+            'Are you sure want to complete task?',
+            [
+              { text: 'Cancel', onPress: () => console.log('cancel')},
+              { text: 'OK', onPress: () => this.props.dispatch(Todo.postTodoComplete(this.props, item.taskId, item.userId))},
+            ],
+            { cancelable: false }
+          )
+        },
+        autoClose: true
+      }];
+      let today = moment(new Date()).format('YYYY-MM-DD');
+      let tomorrow = moment(new Date()).add(1, "day").format('YYYY-MM-DD');
+      let yesterday = moment(new Date()).add(-1, "day").format('YYYY-MM-DD');
+
+      if (moment(item.dueDate).format('YYYY-MM-DD') === today){
+        item.dueDate = 'today';
+      } else if(moment(item.dueDate).format('YYYY-MM-DD') === tomorrow){
+        item.dueDate = 'tomorrow';
+      } else if (moment(item.dueDate).format('YYYY-MM-DD') === yesterday) {
+        item.dueDate = 'yesterday';
+      }else{
+        item.dueDate = item.dueDate;
+      }
+      
+      return (
+        <Swipeout left={swipeLeftBtn} right={swipeRightBtn} autoClose={true} close={true} backgroundColor={'transparent'}>
+          <View key={item.taskId} style={styles.row}>
+            <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
+              <View style={[styles.button, { backgroundColor: item.colorCode ? item.colorCode : colors.colorRed}]}/>
+              <View style={{marginLeft:20}}>
+                <Text style={(item.status === 1) ? styles.strikeText : styles.boldText}>{item.taskTitle}</Text>
+                <Text style={(item.status === 1) ? styles.grayText : styles.text}> Due {item.dueDate}</Text>
+              </View>
+            </View>
+          </View>
+        </Swipeout>   
+      );
+    }else{
+      return (
+        <View style={{width:'100%',backgroundColor:'red'}}>
+          <Text style={styles.text}>No Todo List available</Text>
+        </View>
+      );
     }
-    this.props.dispatch(Todo.getTodoList(this.props, this.state.userId));
   }
 
   render() {
     return (
       <View style={[style.wrapperContainer]}>
         <Header headerTextLabel={StaticText.applicationTitle}/>
-        <Text>Todo</Text>
+        <ListView
+          dataSource={this.state.dataSource}
+          renderRow={this.renderRow}
+            style={{ width: '100%'}}/>
       </View>
     );
   }
 }
 
 export default connect()(TodoView);
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    paddingTop: 20,
+    paddingBottom: 20,
+    paddingLeft: 20,
+    paddingRight: 20
+  },
+  boldText:{
+    fontSize: 20,
+    marginBottom:5,
+    color:colors.colorBlack
+  },
+  strikeText:{
+    textDecorationLine: 'line-through',
+    fontSize: 20,
+    marginBottom: 5,
+  },
+  text: {
+    fontSize: 14,
+    color:'#444444'
+  },
+  grayText: {
+    fontSize: 14,
+  },
+  button: {
+    width: 20,
+    height: 20,
+    borderRadius: 10
+  }
+});

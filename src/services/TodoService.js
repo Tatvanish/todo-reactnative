@@ -84,6 +84,15 @@ export async function clearTaskAsyncKey() {
   return AsyncStorage.removeItem(TASK_KEY);
 }
 
+export async function setTodoListAfterCompleteOrDelete(tasks){
+  try {
+    let updatedTaskData = JSON.stringify(tasks);
+    let json = AsyncStorage.setItem(TASK_KEY, updatedTaskData);
+    return json;
+  }catch (error){
+    console.log('setTodoListAfterCompleteOrDelete error:', error.message);
+  };
+}
 /* set constants for API success & failure */
 const SET_LOADER = 'SET_LOADER';
 const GET_COLORLIST_SUCCESS = 'GET_COLORLIST_SUCCESS';
@@ -94,6 +103,12 @@ const SET_TODOLIST_FAILURE = 'SET_TODOLIST_FAILURE';
 
 const GET_TODOLIST_SUCCESS = 'GET_TODOLIST_SUCCESS';
 const GET_TODOLIST_FAILURE = 'GET_TODOLIST_FAILURE';
+
+const TODO_COMPLETE_SUCCESS = 'TODO_COMPLETE_SUCCESS';
+const TODO_COMPLETE_FAILURE = 'TODO_COMPLETE_FAILURE';
+
+const TODO_DELETE_SUCCESS = 'TODO_DELETE_SUCCESS';
+const TODO_DELETE_FAILURE = 'TODO_DELETE_FAILURE';
 
 const RESET_STATE = 'RESET_STATE';
 /* set cases for loader & internet connection */
@@ -126,6 +141,25 @@ export const setTodoListSuccess = (value) => ({
 });
 export const setTodoListFail = (value) => ({
   type: SET_TODOLIST_FAILURE,
+  payload: value
+});
+
+/*todo complete & delete success,failure*/
+export const todoCompleteSuccess = (value) => ({
+  type: TODO_COMPLETE_SUCCESS,
+  payload: value
+});
+export const todoCompleteFail = (value) => ({
+  type: TODO_COMPLETE_FAILURE,
+  payload: value
+});
+
+export const todoDeleteSuccess = (value) => ({
+  type: TODO_DELETE_SUCCESS,
+  payload: value
+});
+export const todoDeleteFail = (value) => ({
+  type: TODO_DELETE_FAILURE,
   payload: value
 });
 
@@ -170,24 +204,20 @@ export const getColorList = (props) => {
 
 export const getTodoList = (props, userId) => {
   return async (dispatch) => {
-    dispatch(setLoader(true));    
-    let todoList = list = [];
+    dispatch(setLoader(true));
     try {
-      todoList = await AsyncStorage.getItem(TASK_KEY);
-      todoList = JSON.parse(todoList);
+      let todoList = await AsyncStorage.getItem(TASK_KEY);      
+      todoList = JSON.parse(todoList);      
       if (todoList && !_.isEmpty(todoList) && todoList.length > 0) {
-        console.log('todolist--->',todoList);
-       /*  list = todoList.find(item => item.userId === userId);        
-        console.log('list',list);
-        if(list && !_.isEmpty(list)){
-          console.log('get todo list --->', list);
+        let list = [];
+        list = todoList.filter(x => x.userId === userId);
+        if(list && !_.isEmpty(list) && list.length > 0){          
+          console.log('todolist--->', list);          
           dispatch(getTodoListSuccess(list));
         }else{
-          Toast.show('Task not found');
           dispatch(getTodoListFail(''));
-        } */
+        }
       } else {
-        Toast.show('Task not found');
         dispatch(getTodoListFail(''));
       }
       dispatch(setLoader(false));
@@ -207,9 +237,11 @@ export const postTodoTask = (props, addTaskData, _deviceToken) => {
       taskTitle: addTaskData.taskTitle,
       dueDate: addTaskData.dueDate,
       colorId: addTaskData.colorId,
+      colorCode: addTaskData.colorCode,
+      status: addTaskData.status,
       DeviceToken: _deviceToken,
       DeviceType: Platform.OS === 'ios' ? 1 : 2,
-    };   
+    }; 
     AsyncStorage.getItem(TASK_KEY).then((tasks) => {
       let taskData = JSON.parse(tasks);
       if (taskData && !_.isEmpty(taskData) && taskData !== null) {
@@ -222,18 +254,22 @@ export const postTodoTask = (props, addTaskData, _deviceToken) => {
         } else {
           console.log('new task created');
           setTodoTaskAsyncKey(body);
-          props.navigation.navigate('TodoList');
           Toast.show('Task added successfully.');
-          dispatch(setTodoListSuccess(''));   
-          dispatch(getTodoList(props, addTaskData.userId));
+          dispatch(setTodoListSuccess(''));
+          setTimeout(() => {            
+            dispatch(getTodoList(props, addTaskData.userId));
+          }, 2);  
+          props.navigation.navigate('TodoList');
         }
       } else {
         console.log('first task created');
         setTodoTaskAsyncKey(body);
-        props.navigation.navigate('TodoList');
         Toast.show('Task added successfully.');
         dispatch(setTodoListSuccess('')); 
-        dispatch(getTodoList(props, addTaskData.userId));  
+        setTimeout(() => {
+          dispatch(getTodoList(props, addTaskData.userId));
+        }, 2);
+        props.navigation.navigate('TodoList');
       }
       dispatch(setLoader(false));
     }).catch((error) => {
@@ -241,13 +277,78 @@ export const postTodoTask = (props, addTaskData, _deviceToken) => {
       Toast.show('We are unable to add new task, please try again');
       dispatch(setLoader(false));
       dispatch(setTodoListFail(''));
-    }); 
+    });
   }  
+}
+
+export const postTodoComplete = (props, taskId, userId) => {
+  return async (dispatch) => {
+    dispatch(setLoader(true));
+    AsyncStorage.getItem(TASK_KEY).then((tasks) => {
+      let taskData = JSON.parse(tasks);
+      if (taskData && !_.isEmpty(taskData) && taskData !== null) {
+        console.log('all task list--->', taskData);
+        let index = taskData.map(e => e.taskId).indexOf(taskId);
+        if (index > -1){
+          taskData[index].status = 1;
+          console.log('taskData[index]', taskData[index]);          
+          setTodoListAfterCompleteOrDelete(taskData);
+          Toast.show('Task Completed successfully.');
+          dispatch(todoCompleteSuccess(''));
+          dispatch(getTodoList(props, userId));
+        }
+        else {
+          Toast.show('Error to complete task.');
+          dispatch(todoDeleteFail(''));
+        }
+      } else {
+        Toast.show('Error to complete task.');
+        dispatch(todoDeleteFail(''));
+      }
+      dispatch(setLoader(false));
+    }).catch((error) => {
+      console.log('get task key error:', error.message);
+      Toast.show('We are unable to complete task, please try again');
+      dispatch(setLoader(false));
+    });
+  }
+}
+
+export const postTodoDelete = (props, taskId, userId) => {
+  return async (dispatch) => {
+    dispatch(setLoader(true));
+    AsyncStorage.getItem(TASK_KEY).then((tasks) => {
+      let taskData = JSON.parse(tasks);
+      if (taskData && !_.isEmpty(taskData) && taskData !== null) {
+        console.log('all task list--->', taskData);
+        let index = taskData.map(e => e.taskId).indexOf(taskId);
+        if (index > -1) {
+          taskData.splice(index, 1);      
+          setTodoListAfterCompleteOrDelete(taskData);
+          Toast.show('Task Deleted successfully.');
+          dispatch(todoCompleteSuccess(''));
+          dispatch(getTodoList(props, userId));
+        }
+        else {
+          Toast.show('Error to delete task.');
+          dispatch(todoDeleteFail(''));
+        }
+      } else {
+        Toast.show('Error to delete task.');
+        dispatch(todoDeleteFail(''));
+      }
+      dispatch(setLoader(false));
+    }).catch((error) => {
+      console.log('get task key error:', error.message);
+      Toast.show('We are unable to delete task, please try again');
+      dispatch(setLoader(false));
+    });
+  }
 }
 /* Initial state */
 const initialState = Map({
   colorList: {},
-  todoList : {},
+  todo : {},
   successMsg: '',
   errorMsg: '',
   loading: false
@@ -263,7 +364,7 @@ export default function TodoReducer(state = initialState, action) {
       return state;
 
     case GET_TODOLIST_SUCCESS:
-      return state.set('todoList',action.payload);
+      return state.set('todo',action.payload);
 
     case GET_TODOLIST_FAILURE:
       return state;
@@ -272,6 +373,12 @@ export default function TodoReducer(state = initialState, action) {
       return state;
 
     case SET_TODOLIST_FAILURE:
+      return state;
+
+    case TODO_COMPLETE_SUCCESS:
+      return state;
+
+    case TODO_COMPLETE_FAILURE:
       return state;
 
     case SET_LOADER:

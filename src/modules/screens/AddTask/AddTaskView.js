@@ -36,9 +36,11 @@ class AddTaskView extends Component {
       taskTitle:'',
       dueDate:'',
       selectedColor:'',
+      colorCode:'',
       taskTitleError:'',
       dueDateError: '',
-      colorError:''
+      colorError:'',
+      status:0      
     }
     this.props.dispatch(Todo.getColorList(this.props));
   }
@@ -54,10 +56,10 @@ class AddTaskView extends Component {
   onClickSelectColor = (element) => {
     if (element.isSelected === false) {
       element.isSelected = true;
-      this.setState({ selectedColor: element.colorId });
+      this.setState({ selectedColor: element.colorId, colorCode : element.colorCode });
     } else {
       element.isSelected = false;
-      this.setState({ selectedColor: element.colorId });
+      this.setState({ selectedColor: element.colorId, colorCode: element.colorCode });
     }
   }
 
@@ -90,23 +92,24 @@ class AddTaskView extends Component {
     if(_.isEmpty(this.state.taskTitleError) && _.isEmpty(this.state.dueDateError) 
     && (this.state.colorError === '' || this.state.colorError === null)){
       let addTaskData = {
-        userId : this.state.userId,
+        userId: this.state.userId,
         taskTitle : this.state.taskTitle,
         dueDate: this.state.dueDate,
-        colorId: this.state.selectedColor
+        colorId: this.state.selectedColor,
+        colorCode: this.state.colorCode,
+        status: this.state.status
       }
       console.log('addTaskData', addTaskData);
       this.props.dispatch(Todo.postTodoTask(this.props, addTaskData, '123456'));  
       setTimeout(() => {
         this.setState({
-          userId: '',
           taskTitle: '',
           dueDate: '',
-          selectedColor: ''
+          selectedColor: '',
+          colorCode:''    
         });
-      }, 1000);
+      }, 2000);
     }else{
-      console.log('this.state',this.state);
       console.log('test');
     }
   }

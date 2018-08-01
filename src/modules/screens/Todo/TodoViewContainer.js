@@ -7,7 +7,7 @@ export default connect(
   state => ({
     // user defined states & props
     user: state.getIn(['authReducer', 'user']),
-    todoList: state.getIn(['todoReducer', 'todoList'])
+    todo: state.getIn(['todoReducer', 'todo'])
   }),
   dispatch => {
     return {
