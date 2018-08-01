@@ -298,15 +298,17 @@ export const postTodoComplete = (props, taskId, userId) => {
           setTodoListAfterCompleteOrDelete(taskData);
           Toast.show('Task Completed successfully.');
           dispatch(todoCompleteSuccess(''));
-          dispatch(getTodoList(props, userId));
+          setTimeout(() => {
+            dispatch(getTodoList(props, userId));
+          }, 1);
         }
         else {
           Toast.show('Error to complete task.');
-          dispatch(todoDeleteFail(''));
+          dispatch(todoCompleteFail(''));
         }
       } else {
         Toast.show('Error to complete task.');
-        dispatch(todoDeleteFail(''));
+        dispatch(todoCompleteFail(''));
       }
       dispatch(setLoader(false));
     }).catch((error) => {
@@ -329,7 +331,7 @@ export const postTodoDelete = (props, taskId, userId) => {
           taskData.splice(index, 1);      
           setTodoListAfterCompleteOrDelete(taskData);
           Toast.show('Task Deleted successfully.');
-          dispatch(todoCompleteSuccess(''));
+          dispatch(todoDeleteSuccess(''));
           setTimeout(() => {            
             dispatch(getTodoList(props, userId));
           }, 1);

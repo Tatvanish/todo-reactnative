@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
     fontSize: 20,
     marginBottom: 5,
+    color:colors.colorLightGray
   },
   text: {
     fontSize: 14,
@@ -168,6 +169,7 @@ const styles = StyleSheet.create({
   },
   grayText: {
     fontSize: 14,
+    color: colors.colorLightGray
   },
   button: {
     width: 20,
