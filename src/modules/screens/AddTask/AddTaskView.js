@@ -93,7 +93,7 @@ class AddTaskView extends Component {
     && (this.state.colorError === '' || this.state.colorError === null)){
       let addTaskData = {
         userId: this.state.userId,
-        taskTitle : this.state.taskTitle,
+        taskTitle: _.upperFirst(this.state.taskTitle),
         dueDate: this.state.dueDate,
         colorId: this.state.selectedColor,
         colorCode: this.state.colorCode,
