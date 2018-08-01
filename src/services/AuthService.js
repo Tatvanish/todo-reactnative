@@ -89,7 +89,7 @@ export const setLoader = (value) => ({ type: SET_LOADER, payload: value });
 /* set cases for user login success, failure, invalid login and logout */
 export const loginSuccess = (value) => ({
   type: SESSION_LOGIN_SUCCESS,
-  payload: value
+  payload: JSON.stringify(value)
 });
 export const loginFail = (value) => ({
   type: SESSION_LOGIN_FAIL,

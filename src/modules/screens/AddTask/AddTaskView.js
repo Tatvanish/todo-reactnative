@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, SafeAreaView, TextInput, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import _ from 'lodash';
@@ -47,7 +47,7 @@ class AddTaskView extends Component {
   
   componentDidMount(){    
     if(this.props.user && !_.isEmpty(this.props.user)){
-      let user = this.props.user;
+      let user = JSON.parse(this.props.user);
       console.log('logged in user--->',user);
       this.setState({userId:user.userId});
     }
@@ -117,7 +117,7 @@ class AddTaskView extends Component {
 
   render() {
     return (
-      <View style={[style.wrapperContainer]}>
+      <SafeAreaView style={[style.wrapperContainer]}>
         <Header headerTextLabel={StaticText.AddText} />
         <View style={[style.formStyle,{marginTop:20}]}>
           <View style={{marginBottom:20}}>
@@ -179,7 +179,7 @@ class AddTaskView extends Component {
                   element.isSelected = false;
                 }
                 return (
-                  <TouchableOpacity key={index} onPress={() => { this.onClickSelectColor(element); }} activeOpacity={1} style={[styles.colorButton, { backgroundColor: element.colorCode }]}>
+                  <TouchableOpacity key={index} onPress={() => { this.onClickSelectColor(element); }} style={[styles.colorButton, { backgroundColor: element.colorCode }]}>
                     {(element.isSelected === true) ? (
                       <Image style={styles.checkImageStyle}
                         source={require('../../../../images/checkIcon.png')} />
@@ -196,7 +196,7 @@ class AddTaskView extends Component {
             <CustomButton btnTextLabel={StaticText.AddText} onPress={this.addTask} />
           </View>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }
@@ -209,7 +209,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   colorButton: {
-    width: 50, height: 50, borderRadius:50/2
+    width: 50, height: 50, borderRadius:50/2,
+    opacity:0.3
   },
   colorStyle: {
     flexDirection: 'row',

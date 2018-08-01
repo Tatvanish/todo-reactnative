@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, Image, ListView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, SafeAreaView, Text, TextInput, Image, ListView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import moment from 'moment';
@@ -40,7 +40,7 @@ class TodoView extends Component {
 
   componentWillMount(){
     if (this.props.user && !_.isEmpty(this.props.user)) {
-      let user = this.props.user;
+      let user = JSON.parse(this.props.user);
       console.log('logged in user--->', user);
       this.state.userId = user.userId;
       this.setState({ userId: user.userId });
@@ -125,7 +125,7 @@ class TodoView extends Component {
 
   render() {
     return (
-      <View style={[style.wrapperContainer]}>
+      <SafeAreaView style={[style.wrapperContainer]}>
         <Header headerTextLabel={StaticText.applicationTitle}/>
         {(this.state.dataSource && this.state.dataSource.getRowCount() === 0) ?
         <View style={{ width: '100%', padding:10,alignItems:'center'}}>
@@ -137,7 +137,7 @@ class TodoView extends Component {
           renderRow={this.renderRow}
             style={{ width: '100%'}}/>
         }
-      </View>
+      </SafeAreaView>
     );
   }
 }
@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
   button: {
     width: 20,
     height: 20,
-    borderRadius: 10
+    borderRadius: 10,
+    opacity: 0.3
   }
 });

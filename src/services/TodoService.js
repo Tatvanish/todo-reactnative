@@ -249,10 +249,12 @@ export const postTodoTask = (props, addTaskData, _deviceToken) => {
         console.log('all task list--->', taskData);
         let taskTitle = addTaskData.taskTitle;
         let index = taskData.map(e => e.taskTitle).indexOf(taskTitle);
-        if (parseInt(index) >= 0) {
+        console.log('index',index);
+        if (parseInt(index) >= 0 && taskData[index].userId === addTaskData.userId && 
+        taskData[index].dueDate === addTaskData.dueDate) {
           Toast.show('Task already exist.');
           dispatch(setTodoListFail(''));
-        } else {
+        } else {          
           console.log('new task created');
           setTodoTaskAsyncKey(body);
           dispatch(setTodoListSuccess(''));
@@ -260,7 +262,7 @@ export const postTodoTask = (props, addTaskData, _deviceToken) => {
           setTimeout(() => {            
             dispatch(getTodoList(props, addTaskData.userId));
             props.navigation.navigate('TodoList');
-          }, 2);  
+          }, 2);
         }
       } else {
         console.log('first task created');
@@ -328,7 +330,9 @@ export const postTodoDelete = (props, taskId, userId) => {
           setTodoListAfterCompleteOrDelete(taskData);
           Toast.show('Task Deleted successfully.');
           dispatch(todoCompleteSuccess(''));
-          dispatch(getTodoList(props, userId));
+          setTimeout(() => {            
+            dispatch(getTodoList(props, userId));
+          }, 1);
         }
         else {
           Toast.show('Error to delete task.');

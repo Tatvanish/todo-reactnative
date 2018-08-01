@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, Image } from 'react-native';
+import { View, SafeAreaView, Text, TextInput, Image } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
 // import common styles, functions and static 
@@ -31,17 +31,17 @@ class ProfileView extends Component {
     }
   }
   
-  componentDidMount(){
+  componentWillMount(){
     if(this.props.user && !_.isEmpty(this.props.user)){
       console.log('user---', this.props.user);
-      let user = this.props.user;
+      let user = JSON.parse(this.props.user);
       this.setState({name: user.name});
     }
   }
 
   render() {
     return (
-      <View style={[style.wrapperContainer]}>
+      <SafeAreaView style={[style.wrapperContainer]}>
         <Header headerTextLabel={this.props.name !== "" ? 'Hello, ' + this.state.name : 'My Profile'}/>
         <View style={{width:'100%',flex:1,justifyContent:'flex-end',paddingLeft:10, paddingRight:10}}>        
             <CustomButton 
@@ -59,7 +59,7 @@ class ProfileView extends Component {
               this.props.navigation.dispatch(resetAction);
              }} />
           </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }

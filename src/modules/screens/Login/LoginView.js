@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, TextInput, Image, SafeAreaView } from 'react-native';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 // import common styles and static 
 import style from '../../../themes/css/styles';
 import { StaticText, colors} from '../../../themes/static/common';
@@ -10,13 +11,22 @@ import CustomButton from '../../../components/UserDefinedComponents/Button';
 import Spinner from '../../../components/UserDefinedComponents/Spinner';
 //services
 import * as Auth from '../../../services/AuthService';
+import * as Todo from '../../../services/TodoService';
 
 class LoginView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "tatva",
+      name: "",
       nameError:""
+    }
+  }
+
+  componentWillMount() {    
+    if (this.props.isLoggedIn){
+      if(this.props.user && !_.isEmpty(this.props.user)) {
+      this.props.dispatch(Auth.resetTo(this.props, 'AuthNavigator'));
+      }
     }
   }
   
