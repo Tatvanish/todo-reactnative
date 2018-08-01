@@ -110,6 +110,7 @@ class AddTaskView extends Component {
         });
       }, 2000);
     }else{
+      console.log('this.state',this.state);
       console.log('test');
     }
   }
@@ -170,7 +171,8 @@ class AddTaskView extends Component {
           </View>
           <View style={styles.profileSection}>
             <View style={styles.colorStyle}>
-              {this.props.colorList && this.props.colorList.map((element, index) => {
+              {this.props.colorList && this.props.colorList.length>0
+               && this.props.colorList.map((element, index) => {
                 if (this.state.selectedColor == element.colorId) {
                   element.isSelected = true;
                 } else {

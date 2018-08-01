@@ -29,31 +29,30 @@ class TodoView extends Component {
   });
   constructor(props) {
     super(props);
+    let ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });  
     this.state = {
       userId :'',
       todoList: '',
       selectedTodo:'',
-      dataSource: new ListView.DataSource({
-        rowHasChanged: (r1, r2) => r1 !== r2
-      })
-    }        
+      dataSource: ds.cloneWithRows([])
+    }      
   }
 
-  componentDidMount() {   
+  componentWillMount(){
     if (this.props.user && !_.isEmpty(this.props.user)) {
       let user = this.props.user;
       console.log('logged in user--->', user);
       this.state.userId = user.userId;
-      this.setState({userId:user.userId});
+      this.setState({ userId: user.userId });
       this.props.dispatch(Todo.getTodoList(this.props, this.state.userId));
     }   
   }
-
+    
   componentWillReceiveProps(nextProps) {
     if (nextProps.todo !== this.props.todo && nextProps.todo !== '' &&
-      nextProps.todo !== null && nextProps.todo !== undefined && nextProps.todo.length > 0) {
-      let todoList = _.orderBy(nextProps.todo, 'taskId', 'desc');
-      this.setState({ dataSource: this.state.dataSource.cloneWithRows(todoList)});     
+      nextProps.todo !== null && nextProps.todo !== undefined && nextProps.todo.length > 0) { 
+      let todoList = nextProps.todo;     
+      this.setState({ dataSource: this.state.dataSource.cloneWithRows(todoList)});      
     }
   }
 
@@ -121,12 +120,6 @@ class TodoView extends Component {
           </View>
         </Swipeout>   
       );
-    }else{
-      return (
-        <View style={{width:'100%',backgroundColor:'red'}}>
-          <Text style={styles.text}>No Todo List available</Text>
-        </View>
-      );
     }
   }
 
@@ -134,10 +127,16 @@ class TodoView extends Component {
     return (
       <View style={[style.wrapperContainer]}>
         <Header headerTextLabel={StaticText.applicationTitle}/>
+        {(this.state.dataSource && this.state.dataSource.getRowCount() === 0) ?
+        <View style={{ width: '100%', padding:10,alignItems:'center'}}>
+          <Text style={styles.text}>No todo available</Text>
+        </View>  
+        :
         <ListView
           dataSource={this.state.dataSource}
           renderRow={this.renderRow}
             style={{ width: '100%'}}/>
+        }
       </View>
     );
   }

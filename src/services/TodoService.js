@@ -212,8 +212,9 @@ export const getTodoList = (props, userId) => {
         let list = [];
         list = todoList.filter(x => x.userId === userId);
         if(list && !_.isEmpty(list) && list.length > 0){          
-          console.log('todolist--->', list);          
-          dispatch(getTodoListSuccess(list));
+          console.log('todolist--->', list);   
+          let descList = _.orderBy(list, 'taskId', 'desc');       
+          dispatch(getTodoListSuccess(descList));
         }else{
           dispatch(getTodoListFail(''));
         }
@@ -254,22 +255,22 @@ export const postTodoTask = (props, addTaskData, _deviceToken) => {
         } else {
           console.log('new task created');
           setTodoTaskAsyncKey(body);
-          Toast.show('Task added successfully.');
           dispatch(setTodoListSuccess(''));
+          Toast.show('Task added successfully.');
           setTimeout(() => {            
             dispatch(getTodoList(props, addTaskData.userId));
+            props.navigation.navigate('TodoList');
           }, 2);  
-          props.navigation.navigate('TodoList');
         }
       } else {
         console.log('first task created');
         setTodoTaskAsyncKey(body);
-        Toast.show('Task added successfully.');
         dispatch(setTodoListSuccess('')); 
+        Toast.show('Task added successfully.');
         setTimeout(() => {
           dispatch(getTodoList(props, addTaskData.userId));
+          props.navigation.navigate('TodoList');
         }, 2);
-        props.navigation.navigate('TodoList');
       }
       dispatch(setLoader(false));
     }).catch((error) => {
