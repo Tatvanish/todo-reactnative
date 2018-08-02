@@ -1,26 +1,14 @@
 {
-  "name": "PepperoniAppTemplate",
-  "author": "Futurice",
-  "description": "React Native App Starter Kit for Android and iOS",
-  "license": "MIT",
-  "homepage": "http://getpepperoni.com",
-  "bugs": "https://github.com/futurice/pepperoni-app-kit/issues",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/futurice/pepperoni-app-kit"
-  },
+  "name": "TodoApp",
   "keywords": [
     "React Native",
-    "Starter Kit",
-    "Bitrise",
-    "Redux",
-    "Auth0"
+    "Todo",
+    "Redux"
   ],
   "version": "1.0.0",
   "private": false,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "bundle:ios": "node ./node_modules/react-native/local-cli/cli.js bundle --platform ios --entry-file index.js --bundle-output ios/PepperoniAppTemplate/main.jsbundle --dev=false --verbose",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint src test",
