@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, Text, Image, ListView, StyleSheet, Alert } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import moment from 'moment';
@@ -126,7 +125,7 @@ class TodoView extends Component {
 
   render() {
     return (
-      <SafeAreaView style={[style.wrapperContainer]}>
+      <View style={[style.wrapperContainer]}>
         <Header headerTextLabel={StaticText.applicationTitle}/>
         {(this.state.dataSource && this.state.dataSource.getRowCount() === 0) ?
         <View style={{ width: '100%', padding:10,alignItems:'center'}}>
@@ -138,7 +137,7 @@ class TodoView extends Component {
           renderRow={this.renderRow}
             style={{ width: '100%'}}/>
         }
-      </SafeAreaView>
+      </View>
     );
   }
 }

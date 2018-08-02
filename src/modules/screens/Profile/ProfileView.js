@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, Image } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 // import common styles, functions and static 
 import style from '../../../themes/css/styles';
@@ -42,7 +41,7 @@ class ProfileView extends Component {
 
   render() {
     return (
-      <SafeAreaView style={[style.wrapperContainer]}>
+      <View style={[style.wrapperContainer]}>
         <Header headerTextLabel={this.props.name !== "" ? 'Hello, ' + this.state.name : 'My Profile'}/>
         <View style={{width:'100%',flex:1,justifyContent:'flex-end',paddingLeft:10, paddingRight:10}}>        
             <CustomButton 
@@ -53,7 +52,7 @@ class ProfileView extends Component {
             btnBorderColor={colors.colorRed}            
             onPress={() => this.props.dispatch(Auth.postLogout(this.props))}/>
           </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }

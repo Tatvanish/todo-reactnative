@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, Image, KeyboardAvoidingView, Platform } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 // import common styles and static 
@@ -56,7 +55,7 @@ class LoginView extends Component {
     }else{
     return (
       <KeyboardAvoidingView style={style.wrapperContainer} behavior={this.state.behavior} keyboardVerticalOffset={60}>
-      <SafeAreaView style={[style.wrapperContainer]}>            
+        <View style={[style.wrapperContainer]}>            
         <View style={{height:'55%',width:'100%',alignItems:'center',justifyContent:'flex-end'}}>
           <View style={[style.imageThumbnail]}>
               <Image style={style.imageThumb} source={require('../../../../images/logo.png')} />            
@@ -87,7 +86,7 @@ class LoginView extends Component {
             <CustomButton btnTextLabel={StaticText.LoginButtonTitle} onPress={this.login} />          
           </View>
         </View>        
-      </SafeAreaView>
+        </View>
       </KeyboardAvoidingView>
     );
     }

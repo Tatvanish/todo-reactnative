@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, Image, StyleSheet, TouchableOpacity} from 'react-native';
-import { SafeAreaView } from 'react-navigation';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import _ from 'lodash';
@@ -118,7 +117,7 @@ class AddTaskView extends Component {
 
   render() {
     return (
-      <SafeAreaView style={[style.wrapperContainer]}>
+      <View style={[style.wrapperContainer]}>
         <Header headerTextLabel={StaticText.AddText} />
         <View style={[style.formStyle,{marginTop:20}]}>
           <View style={{marginBottom:20}}>
@@ -197,7 +196,7 @@ class AddTaskView extends Component {
             <CustomButton btnTextLabel={StaticText.AddText} onPress={this.addTask} />
           </View>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }
