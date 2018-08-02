@@ -1,4 +1,4 @@
-![Todo App](/images/logo.png?v=1)
+![Todo App](/docs/todo.png?v=2)
 React Native + Redux + AsyncStorage
 ===
 
