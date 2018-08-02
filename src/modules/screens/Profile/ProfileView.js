@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, SafeAreaView, Text, TextInput, Image } from 'react-native';
-import { StackActions, NavigationActions } from 'react-navigation';
+import { View, Image } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 // import common styles, functions and static 
 import style from '../../../themes/css/styles';

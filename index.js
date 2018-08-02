@@ -3,7 +3,8 @@ import store from './src/redux/store';
 import AppViewContainer from './src/modules/AppViewContainer';
 
 import React, {Component} from 'react';
-import {AppRegistry} from 'react-native';
+import {AppRegistry, YellowBox} from 'react-native';
+YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 
 class TodoApp extends Component {
   render() {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, Image, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
-import { StackActions, NavigationActions } from 'react-navigation';
+import { View, Text, TextInput, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 // import common styles and static 

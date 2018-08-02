@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, SafeAreaView, Text, TextInput, Image, ListView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Image, ListView, StyleSheet, Alert } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import moment from 'moment';
