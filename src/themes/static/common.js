@@ -1,6 +1,8 @@
 export const StaticText = {
   applicationTitle: 'Todo',
   LoginButtonTitle:'Login',
+  GoogleButtonTitle:'Sign in with google',
+  TwitterButtonTitle:'Sign in with twitter',
   NamePlaceHolder: 'Name',
   AddText: 'Add',
   TaskTitlePlaceHolder: 'When do you need to do?',

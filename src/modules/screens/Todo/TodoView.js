@@ -11,7 +11,7 @@ import { StaticText, colors } from '../../../themes/static/common';
 import Header from '../../../components/UserDefinedComponents/HeaderComponent';
 import CustomButton from '../../../components/UserDefinedComponents/Button';
 //services
-import * as Todo from '../../../services/TodoService';
+import * as AuthService from '../../../services/AuthService';
 
 class TodoView extends Component { 
   static navigationOptions = ({ navigation }) => ({
@@ -43,16 +43,16 @@ class TodoView extends Component {
       let user = JSON.parse(this.props.user);
       console.log('logged in user--->', user);
       this.state.userId = user.userId;
-      this.setState({ userId: user.userId });
-      this.props.dispatch(Todo.getTodoList(this.props, this.state.userId));
-    }   
+      this.setState({ userId: user.userId });      
+      this.props.dispatch(AuthService.getTodoList(user.userId));
+    }      
   }
     
   componentWillReceiveProps(nextProps) {
     if (nextProps.todo !== this.props.todo && nextProps.todo !== '' &&
-      nextProps.todo !== null && nextProps.todo !== undefined && nextProps.todo.length > 0) { 
-      let todoList = nextProps.todo;     
-      this.setState({ dataSource: this.state.dataSource.cloneWithRows(todoList)});      
+    nextProps.todo !== null && nextProps.todo !== 'undefined') { 
+      let todoList = JSON.parse(nextProps.todo);
+      this.setState({ dataSource: this.state.dataSource.cloneWithRows(todoList)});
     }
   }
 
@@ -68,7 +68,7 @@ class TodoView extends Component {
             'Are you sure want to delete task?',
             [
               { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-              { text: 'OK', onPress: () => this.props.dispatch(Todo.postTodoDelete(this.props, item.taskId, item.userId)) },
+              { text: 'OK', onPress: () => this.props.dispatch(AuthService.postTodoDelete(this.props, item.taskId, this.state.userId)) },
             ],
             { cancelable: false }
           )
@@ -86,7 +86,7 @@ class TodoView extends Component {
             'Are you sure want to complete task?',
             [
               { text: 'Cancel', onPress: () => console.log('cancel')},
-              { text: 'OK', onPress: () => this.props.dispatch(Todo.postTodoComplete(this.props, item.taskId, item.userId))},
+              { text: 'OK', onPress: () => this.props.dispatch(AuthService.postTodoComplete(this.props, item.taskId, this.state.userId))},
             ],
             { cancelable: false }
           )
@@ -106,12 +106,11 @@ class TodoView extends Component {
       }else{
         item.dueDate = item.dueDate;
       }
-      
       return (
         <Swipeout left={swipeLeftBtn} right={swipeRightBtn} autoClose={true} close={true} backgroundColor={'transparent'}>
           <View key={item.taskId} style={styles.row}>
             <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-              <View style={[styles.button, { backgroundColor: item.colorCode ? item.colorCode : colors.colorRed}]}/>
+              <View style={[styles.button, { backgroundColor: item.colors.colorCode ? item.colors.colorCode : colors.colorRed}]}/>
               <View style={{marginLeft:20}}>
                 <Text style={(item.status === 1) ? styles.strikeText : styles.boldText}>{item.taskTitle}</Text>
                 <Text style={(item.status === 1) ? styles.grayText : styles.text}> Due {item.dueDate}</Text>

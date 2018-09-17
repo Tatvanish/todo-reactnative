@@ -11,10 +11,10 @@ import Header from '../../../components/UserDefinedComponents/HeaderComponent';
 import CustomButton from '../../../components/UserDefinedComponents/Button';
 import DatePicker from 'react-native-datepicker';
 //services
-import * as Todo from '../../../services/TodoService';
+import * as AuthService from '../../../services/AuthService';
+
 const currentDate = new Date();
 class AddTaskView extends Component {
-  
   static navigationOptions = ({ navigation }) => ({
     title: '',
     tabBarIcon: ({ focused, tintColor }) => {
@@ -28,39 +28,49 @@ class AddTaskView extends Component {
       }
     }
   });
-  
+  static defaultProps = {
+    colorList:[]
+  }
   constructor(props) {
     super(props);
     this.state = {
       userId:'',
       taskTitle:'',
       dueDate:'',
-      selectedColor:'',
-      colorCode:'',
+      selectedColor:{},      
       taskTitleError:'',
       dueDateError: '',
       colorError:'',
-      status:0      
+      status:0,
+      colorList:[],    
+    }    
+  }
+  componentWillMount(){
+    if (this.props.colorList && this.props.colorList.length > 0 && this.props.colorList !== "" && this.props.colorList !== null && this.props.colorList !== "undefined") {
+      let colors = JSON.parse(this.props.colorList);   
+      this.setState({ colorList: colors });
+    } else {
+      this.props.dispatch(AuthService.getColorList());
     }
-    this.props.dispatch(Todo.getColorList(this.props));
+  }
+  
+  componentWillReceiveProps(nextProps){
+    if (nextProps.colorList && nextProps.colorList.length > 0 && nextProps.colorList !== "" && nextProps.colorList !== null && nextProps.colorList !== "undefined") {
+      let colors = JSON.parse(nextProps.colorList);
+      this.setState({ colorList: colors });
+    }
   }
   
   componentDidMount(){    
     if(this.props.user && !_.isEmpty(this.props.user)){
       let user = JSON.parse(this.props.user);
-      console.log('logged in user--->',user);
       this.setState({userId:user.userId});
     }
   }
 
   onClickSelectColor = (element) => {
-    if (element.isSelected === false) {
-      element.isSelected = true;
-      this.setState({ selectedColor: element.colorId, colorCode : element.colorCode });
-    } else {
-      element.isSelected = false;
-      this.setState({ selectedColor: element.colorId, colorCode: element.colorCode });
-    }
+    element.isSelected = !element.isSelected;
+    this.setState({ selectedColor: element});    
   }
 
   addTask = () => {
@@ -95,23 +105,20 @@ class AddTaskView extends Component {
         userId: this.state.userId,
         taskTitle: _.upperFirst(this.state.taskTitle),
         dueDate: this.state.dueDate,
-        colorId: this.state.selectedColor,
-        colorCode: this.state.colorCode,
+        colors: this.state.selectedColor,
         status: this.state.status
       }
-      console.log('addTaskData', addTaskData);
-      this.props.dispatch(Todo.postTodoTask(this.props, addTaskData, '123456'));  
+      this.props.dispatch(AuthService.postTodoTask(this.props, addTaskData));  
       setTimeout(() => {
         this.setState({
           taskTitle: '',
           dueDate: '',
-          selectedColor: '',
+          selectedColor: {},
           colorCode:''    
         });
       }, 2000);
     }else{
-      console.log('this.state',this.state);
-      console.log('test');
+      console.log('this.state',this.state);      
     }
   }
 
@@ -171,9 +178,9 @@ class AddTaskView extends Component {
           </View>
           <View style={styles.profileSection}>
             <View style={styles.colorStyle}>
-              {this.props.colorList && this.props.colorList.length>0
-               && this.props.colorList.map((element, index) => {
-                if (this.state.selectedColor == element.colorId) {
+              {this.state.colorList && this.state.colorList.length>0
+               && this.state.colorList.map((element, index) => {
+                if (this.state.selectedColor.colorId == element.colorId) {
                   element.isSelected = true;
                 } else {
                   element.isSelected = false;

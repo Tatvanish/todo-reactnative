@@ -6,8 +6,9 @@ import AddTaskView from './AddTaskView';
 export default connect(
   state => ({
     // user defined states & props
+    userList: state.getIn(['authReducer', 'userList']),
     user: state.getIn(['authReducer', 'user']),
-    colorList: state.getIn(['todoReducer', 'colorList'])
+    colorList: state.getIn(['authReducer', 'colorList'])
   }),
   dispatch => {
     return {

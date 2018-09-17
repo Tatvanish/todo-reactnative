@@ -9,64 +9,6 @@ export default StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
   },
-  /* navigationHeaderView: {
-    alignItems: 'center',
-    height: '55%',
-    alignSelf: 'center',
-    width: "80%",
-  },
-  navigationHeader: {
-    backgroundColor: '#ffffff',
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderTopColor: colors.colorWhite,
-    borderLeftColor: colors.colorWhite,
-    borderRightColor: colors.colorWhite,
-    borderBottomColor: '#CBCBCB',
-    // borderWidth: 2,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  navigationHeaderOff: {
-    backgroundColor: colors.colorWhite,
-    borderTopColor: colors.colorWhite,
-    borderLeftColor: colors.colorWhite,
-    borderRightColor: colors.colorWhite,
-    borderBottomColor: '#CBCBCB',
-    borderWidth: 2,
-    elevation: 0,
-    shadowOpacity: 0,
-    shadowOffset: {
-      height: 0,
-      width: 0
-    },
-    shadowRadius: 0, borderBottomWidth: 0,
-  },
-  navigationHeaderTitle: {
-    alignSelf: 'center',
-    textAlign: 'center',
-    color: colors.colorBoldBlack,
-    width: "75%",
-    fontSize: 24,
-  },
-  navigationHeaderTitleOff: {
-    fontSize: 24,
-    width: "75%",
-    color: colors.colorBoldBlack,
-  },
-  headerTitleImage: {
-    width: '100%',
-    height: '100%',
-    marginLeft: Platform.OS === 'ios' ? 0 : 15,
-    resizeMode: 'contain'
-  },
-  headerTitle: {
-    flexDirection: 'row',
-    textAlign: 'center',
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: '#4A4A4A',
-  }, */
   wrapper: {
     flex: 1,
     justifyContent: 'flex-start',

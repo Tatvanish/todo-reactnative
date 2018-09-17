@@ -4,14 +4,12 @@ import {loop, combineReducers} from 'redux-loop-symbol-ponyfill';
 import CounterStateReducer from '../modules/counter/CounterState';
 import SessionStateReducer, {RESET_STATE} from '../modules/session/SessionState';
 import AuthReducer from '../services/AuthService';
-import TodoReducer from '../services/TodoService';
 // ## Generator Reducer Imports
 
 const reducers = {  
   //navigatorState: NavigatorStateReducer,
   session: SessionStateReducer,
-  authReducer:AuthReducer,
-  todoReducer: TodoReducer,
+  authReducer:AuthReducer
 };
 
 // initial state, accessor and mutator for supporting root-level

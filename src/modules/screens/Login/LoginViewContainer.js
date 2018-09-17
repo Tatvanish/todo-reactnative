@@ -7,6 +7,7 @@ export default connect(
   state => ({
     // user defined states & props
     user: state.getIn(['authReducer', 'user']),
+    userList: state.getIn(['authReducer', 'userList']),
     isLoggedIn: state.getIn(['authReducer', 'isLoggedIn']),
     loading: state.getIn(['authReducer', 'loading']),
   }),

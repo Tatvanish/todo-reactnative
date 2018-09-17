@@ -5,94 +5,43 @@ import { get, post } from '../utils/api';
 import _ from 'lodash';
 import { StackActions, NavigationActions } from 'react-navigation';
 import Toast from 'react-native-simple-toast';
-//import { setAuthenticationToken, getAuthenticationToken } from '../utils/authentication';
-const colorsArray = [
+var Realm = require('realm');
+const ColorSchema = {
+  name: 'Colors',
+  primaryKey: 'colorId',
+  properties:
   {
-    colorId: 1,
-    colorCode: '#4A90E2'
-  },
-  {
-    colorId: 2,
-    colorCode: '#80D320'
-  },
-  {
-    colorId: 3,
-    colorCode: '#CF001C'
-  },
-  {
-    colorId: 4,
-    colorCode: '#BB10DF'
-  },
-  {
-    colorId: 5,
-    colorCode: '#F3A324'
-  },
-];
-/*Async storage colors keys declaration*/
-const COLORLIST_KEY = 'TodoState:ColorList';
-export async function setcolorListAsyncKey(colors) {
-  try {
-    return await AsyncStorage.setItem(COLORLIST_KEY, JSON.stringify(colors));
-  } catch (error) {
-    return false;
-    console.log('COLORLIST_KEY error:', error.message);
+    colorId: { type: 'int', default: 0 },
+    colorCode: 'string',
   }
 }
-
-export async function clearUserAsyncKey() {
-  return AsyncStorage.removeItem(COLORLIST_KEY);
+const TodoSchema = {
+  name: 'Todo',
+  primaryKey: 'taskId',
+  properties:
+  {
+    taskId: { type: 'int', default: 0 },
+    taskTitle: 'string',
+    dueDate: 'string',
+    colors: { type: 'Colors' },
+    status: 'bool'
+  }
 }
-
-/*Async storage task keys declaration*/
-const USER_KEY = 'TodoState:User';
-const TASK_KEY = 'TodoState:TodoTask';
-export async function setTodoTaskAsyncKey(task) {
-  await AsyncStorage.getItem(TASK_KEY)
-    .then((tasks) => {
-      let taskList = JSON.parse(tasks);
-      if (taskList && !_.isEmpty(taskList)) {
-        console.log(444);
-        console.log('get todo tasks', taskList);
-        let taskArray = _.orderBy(taskList, 'taskId', 'desc');
-        console.log('taskArray', taskArray);
-        let body = task;
-        body.taskId = parseInt(taskArray[0].taskId) + 1;
-        taskList.push(body);
-        let taskData = JSON.stringify(taskList);
-        console.log('taskData---->', taskData);
-        let json = AsyncStorage.setItem(TASK_KEY, taskData);
-        return json;
-      } else {
-        console.log(555);
-        let newTask = [];
-        let body = task;
-        body.taskId = 1;
-        console.log('body', body);
-        newTask.push(body);
-        let taskData = JSON.stringify(newTask);
-        console.log('taskData---->', taskData);
-        let json = AsyncStorage.setItem(TASK_KEY, taskData);
-        return json;
-      }
-    })
-    .catch((error) => {
-      console.log('set task key error:', error.message);
-    });
+const UserSchema = {
+  name: 'User',
+  primaryKey: 'userId',
+  properties:
+  {
+    userId: { type: 'int', default: 0 },
+    name: 'string',
+    todos: { type: 'list', objectType: 'Todo' }
+  }
 }
+let realm = new Realm({ path: 'test.realm', schemaVersion: 1, schema: [ColorSchema, TodoSchema, UserSchema] });
+let users = realm.objects('User');
+let colors = realm.objects('Colors');
+let todos = realm.objects('Todo');
 
-export async function clearTaskAsyncKey() {
-  return AsyncStorage.removeItem(TASK_KEY);
-}
-
-export async function setTodoListAfterCompleteOrDelete(tasks){
-  try {
-    let updatedTaskData = JSON.stringify(tasks);
-    let json = AsyncStorage.setItem(TASK_KEY, updatedTaskData);
-    return json;
-  }catch (error){
-    console.log('setTodoListAfterCompleteOrDelete error:', error.message);
-  };
-}
 /* set constants for API success & failure */
 const SET_LOADER = 'SET_LOADER';
 const GET_COLORLIST_SUCCESS = 'GET_COLORLIST_SUCCESS';
@@ -118,7 +67,7 @@ export const setResetState = () => ({ type: RESET_STATE});
 /* set cases for colorlist success, failure */
 export const colorListSuccess = (value) => ({
   type: GET_COLORLIST_SUCCESS,
-  payload: value
+  payload: JSON.stringify(value)
 });
 export const colorListFail = (value) => ({
   type: GET_COLORLIST_FAILURE,
@@ -137,7 +86,7 @@ export const getTodoListFail = (value) => ({
 
 export const setTodoListSuccess = (value) => ({
   type: SET_TODOLIST_SUCCESS,
-  payload: value
+  payload: JSON.stringify(value)
 });
 export const setTodoListFail = (value) => ({
   type: SET_TODOLIST_FAILURE,
@@ -176,29 +125,26 @@ export const resetTo = (props, route) => {
   };
 };
 
-export const getColorList = (props) => {
+export const getColorList = () => {
   return async (dispatch) => {
-    dispatch(setLoader(true));  
-    let allColors = [];
-    try {
-      allColors = await AsyncStorage.getItem(COLORLIST_KEY);
-      allColors = JSON.parse(allColors);
-      if (allColors && !_.isEmpty(allColors) && allColors.length > 0) {
-        console.log('get colors--->', allColors);
-        dispatch(colorListSuccess(allColors));
-      } else {
-        setcolorListAsyncKey(colorsArray);
-        allColors = await AsyncStorage.getItem(COLORLIST_KEY);
-        allColors = JSON.parse(allColors);
-        console.log('set & get colors --->', allColors);
-        dispatch(colorListSuccess(allColors));
-      }
-      dispatch(setLoader(false));
+    dispatch(setLoader(true));
+    try {    
+      realm.write(() => {
+        realm.create('Colors', { colorId: 1, colorCode: '#4A90E2' }); 
+        realm.create('Colors', { colorId: 2, colorCode: '#80D320' });
+        realm.create('Colors', { colorId: 3, colorCode: '#CF001C' });
+        realm.create('Colors', { colorId: 4, colorCode: '#BB10DF' });
+        realm.create('Colors', { colorId: 5, colorCode: '#F3A324' });
+      });
+        let colorArr = [];
+        colors.map((color,i)=>{colorArr.push(color)});
+        dispatch(colorListSuccess(colorArr));
+        dispatch(setLoader(false));       
     } catch (error) {
       console.log('getcolorlist error:', error.message);
       Toast.show('Error to fetch colorlist');
       dispatch(setLoader(false));
-    }
+    }   
   };
 }
 
@@ -230,20 +176,65 @@ export const getTodoList = (props, userId) => {
   };
 }
 
-export const postTodoTask = (props, addTaskData, _deviceToken) => {
+export async function setTodoList(todoData) {
+  let todoArr = []; 
+  try {      
+    let taskId = todos.length+1;        
+    realm.write(() => {      
+      realm.create('Todo', {
+        taskId: taskId,
+        taskTitle: todoData.taskTitle,
+        dueDate: todoData.dueDate,
+        status: false
+      });      
+      let todoObject = realm.create('Todo', {
+        taskId: taskId,       
+        colors: { colorId: todoData.colors.colorId, colorCode: todoData.colors.colorCode }
+      }, true);
+      let data = realm.create('User', {
+        userId: todoData.userId
+      }, true);      
+      data.todos.push(todoObject);
+    });
+  } catch (error) {
+    console.log('set todo list error', error);
+  }
+  console.log('todoArr---', todoArr);
+  return todoArr;
+}
+
+export async function getRealmTodoList() {
+  let todoArr = [], todoList = '';
+  try {
+    todos.map((todo, i) => { todoArr.push(todo) });
+    if (todoArr.length > 0) {
+      todoList = JSON.stringify(todoArr);
+    }
+  } catch (error) {
+    console.log('get todo list error', error);
+  }
+  console.log('list---', todoList);
+  return todoList;
+}
+
+export const postTodoTask = (props, addTaskData) => {
   return async (dispatch) => {
-    dispatch(setLoader(true));
-    let body = {
-      userId: addTaskData.userId,
-      taskTitle: addTaskData.taskTitle,
-      dueDate: addTaskData.dueDate,
-      colorId: addTaskData.colorId,
-      colorCode: addTaskData.colorCode,
-      status: addTaskData.status,
-      DeviceToken: _deviceToken,
-      DeviceType: Platform.OS === 'ios' ? 1 : 2,
-    }; 
-    AsyncStorage.getItem(TASK_KEY).then((tasks) => {
+    dispatch(setLoader(true));    
+   /*  if (todoList && !_.isEmpty(todoList) && todoList !== null && todoList !== 'undefined') {      
+      let todoData = await setTodoList(addTaskData);
+      console.log('todoData', JSON.parse(JSON.stringify(todoData)));
+    }else{
+      console.log('first todo list');            
+    } */
+
+    let currentUserList = users.filtered('userId = "' + addTaskData.userId + '"');
+    currentUserList = JSON.parse(JSON.stringify(currentUserList));
+    let todolist = currentUserList[0].todos;
+    console.log('currentUserList', currentUserList);
+    
+    let todoData = await setTodoList(addTaskData);
+    console.log('todoData', JSON.parse(JSON.stringify(todoData)));    
+   /*  AsyncStorage.getItem(TASK_KEY).then((tasks) => {
       let taskData = JSON.parse(tasks);
       if (taskData && !_.isEmpty(taskData) && taskData !== null) {
         console.log('all task list--->', taskData);
@@ -280,11 +271,11 @@ export const postTodoTask = (props, addTaskData, _deviceToken) => {
       Toast.show('We are unable to add new task, please try again');
       dispatch(setLoader(false));
       dispatch(setTodoListFail(''));
-    });
+    }); */
   }  
 }
 
-export const postTodoComplete = (props, taskId, userId) => {
+/* export const postTodoComplete = (props, taskId, userId) => {
   return async (dispatch) => {
     dispatch(setLoader(true));
     AsyncStorage.getItem(TASK_KEY).then((tasks) => {
@@ -351,11 +342,12 @@ export const postTodoDelete = (props, taskId, userId) => {
       dispatch(setLoader(false));
     });
   }
-}
+} */
+
 /* Initial state */
 const initialState = Map({
-  colorList: {},
-  todo : {},
+  colorList: [],
+  todo : '',
   successMsg: '',
   errorMsg: '',
   loading: false

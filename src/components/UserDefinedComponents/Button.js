@@ -68,8 +68,8 @@ export default class Button extends Component {
 const styles = StyleSheet.create({
   fullWidthButtonWrapper: {
     width: '100%',
-    marginTop: 15,
-    marginBottom: 15,
+    marginTop: 5,
+    marginBottom: 5,
   },
   fullWidthButton: {
     width: '100%',
